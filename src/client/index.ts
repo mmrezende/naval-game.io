@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import render from './render.js';
+import render from './render';
 
 const app = new PIXI.Application({
   backgroundColor: 0x00ffff,
@@ -31,10 +31,6 @@ Promise.all([
   }
 
   app.loader.load((loader, resources) => {
-    render({
-      app,
-      state,
-      matchConfig
-    })
+    app.stage.addChild(render());
   });
 });
