@@ -48,15 +48,6 @@ const app = new PIXI.Application();
 
 document.body.appendChild(app.view);
 
-app.loader.load((loader, resources) => {
-  const map = Array(9).fill(Array(9));
-  for(let col = 0; col < map.length; col++) {
-    for(let line = 0; line < map[col].length; line++) {
-      app.stage.addChild(renderTile(line,col));
-    }
-  }
-});
-
 const renderTile = (line,col) => {
   let tile = new PIXI.Graphics();
   tile.beginFill(0xdddddd);
@@ -65,3 +56,12 @@ const renderTile = (line,col) => {
   
   return tile;
 }
+
+app.loader.load((loader, resources) => {
+  const map = Array(9).fill(Array(9));
+  for(let col = 0; col < map.length; col++) {
+    for(let line = 0; line < map[col].length; line++) {
+      app.stage.addChild(renderTile(line,col));
+    }
+  }
+});
