@@ -2,6 +2,8 @@ const express = require('express');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const socketio = require('socket.io');
+const { v4 }  = require('uuid');
+const { serialize, parse } = require("cookie");
 
 const Constants = require('../shared/constants');
 const Game = require('./game');
@@ -29,9 +31,29 @@ console.log(`Server listening on port ${port}`);
 const io = socketio(server);
 
 // Listen for socket.io connections
+io.engine.on("initial_headers", (headers, request) => {
+    const cookies = parse(request.headers.cookie);
+    if(!cookies || !cookies.uuid){
+        headers["set-cookie"] = serialize("uuid", v4(), { sameSite: "strict" });
+    }
+});
+io.engine.on("headers", (headers, request) => {
+    if (!request.headers.cookie) return;
+        const cookies = parse(request.headers.cookie);
+        
+    console.log('tens um cookie');
+    console.log(cookies);
+    if (!cookies.randomId) {
+        headers["set-cookie"] = serialize("randomId", "abc", { maxAge: 86400 });
+    }
+});
 io.on('connection', socket => {
   console.log('Player connected!', socket.id);
 
+  var cookies = parse(socket.handshake.headers.cookie);
+  console.log('Jogador conectado!', socket.id);
+  console.log(cookies);
+  
   socket.on(Constants.MSG_TYPES.JOIN_GAME, joinGame);
   socket.on(Constants.MSG_TYPES.INPUT, handleInput);
   socket.on('disconnect', onDisconnect);
